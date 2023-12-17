@@ -60,6 +60,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
+        row_height: int | None = None,
         use_container_width: bool = False,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
@@ -194,6 +195,8 @@ class ArrowMixin:
             proto.width = width
         if height:
             proto.height = height
+        if row_height:
+            proto.row_height = row_height
 
         if column_order:
             proto.column_order[:] = column_order

@@ -65,12 +65,14 @@ describe("useTableSizer hook", () => {
   it("applies the configured height", () => {
     const NUMBER_OF_ROWS = 10
     const TABLE_HEIGHT = 100
+    const ROW_HEIGHT = 35
     const { result } = renderHook(() =>
       useTableSizer(
         ArrowProto.create({
           data: TEN_BY_TEN,
           useContainerWidth: false,
           height: TABLE_HEIGHT,
+          rowHeight: ROW_HEIGHT,
         }),
         NUMBER_OF_ROWS,
         700
@@ -80,7 +82,7 @@ describe("useTableSizer hook", () => {
     expect(result.current.resizableSize.height).toEqual(TABLE_HEIGHT)
     // +1 rows for header row
     expect(result.current.maxHeight).toEqual(
-      calculateMaxHeight(NUMBER_OF_ROWS + 1)
+      calculateMaxHeight(NUMBER_OF_ROWS + 1, ROW_HEIGHT)
     )
   })
 
@@ -154,12 +156,14 @@ describe("useTableSizer hook", () => {
     const CONTAINER_WIDTH = 700
     const TABLE_WIDTH = 350
     const NUMBER_OF_ROWS = 10 // TEN_BY_TEN has 10 rows
+    const ROW_HEIGHT = 35
     const { result } = renderHook(() =>
       useTableSizer(
         ArrowProto.create({
           data: TEN_BY_TEN,
           useContainerWidth: false,
           width: TABLE_WIDTH,
+          rowHeight: 35,
         }),
         NUMBER_OF_ROWS,
         CONTAINER_WIDTH
@@ -182,7 +186,7 @@ describe("useTableSizer hook", () => {
     expect(result.current.maxWidth).toEqual(CONTAINER_WIDTH)
     // +1 rows for header row
     expect(result.current.maxHeight).toEqual(
-      calculateMaxHeight(NUMBER_OF_ROWS + 1)
+      calculateMaxHeight(NUMBER_OF_ROWS + 1, ROW_HEIGHT)
     )
   })
 })

@@ -39,6 +39,8 @@ message Arrow {
   string form_id = 10;
   // Defines the order in which columns are displayed
   repeated string column_order = 11;
+  // Row height in CSS points
+  uint32 row_height = 12;
 
   // Available editing modes:
   enum EditingMode {

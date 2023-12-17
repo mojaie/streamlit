@@ -34,13 +34,12 @@ export const MAX_COLUMN_AUTO_WIDTH = 500
 // to prevent overlap problem with selection ring.
 export const BORDER_THRESHOLD = 3
 // The default row height in pixels
-export const ROW_HEIGHT = 35
+export const DEFAULT_ROW_HEIGHT = 35
+// The header height in pixels
+export const HEADER_HEIGHT = 35
 // Min width for the resizable table container:
 // Based on one column at minimum width + borders
 const MIN_TABLE_WIDTH = MIN_COLUMN_WIDTH + 2
-// Min height for the resizable table container:
-// Based on header + one column, and border threshold
-const MIN_TABLE_HEIGHT = 2 * ROW_HEIGHT + BORDER_THRESHOLD
 // The default maximum height of the table:
 const DEFAULT_TABLE_HEIGHT = 400
 
@@ -53,10 +52,23 @@ export type AutoSizerReturn = {
   setResizableSize: React.Dispatch<React.SetStateAction<ResizableSize>>
 }
 
-export function calculateMaxHeight(numRows: number): number {
-  // +2 pixels for borders
-  return Math.max(numRows * ROW_HEIGHT + 1 + 2, MIN_TABLE_HEIGHT)
+function calculateMinTableHeight(rowHeight: number): number {
+  // Min height for the resizable table container:
+  // Based on header + one column, and border threshold
+  return HEADER_HEIGHT + rowHeight + BORDER_THRESHOLD
 }
+
+export function calculateMaxHeight(
+  numRows: number,
+  rowHeight: number
+): number {
+  // +2 pixels for borders
+  return Math.max(
+    numRows * rowHeight + 1 + 2,
+    calculateMinTableHeight(rowHeight)
+  )
+}
+
 /**
  * A custom React hook that manages all aspects related to the size of the table.
  *
@@ -75,17 +87,22 @@ function useTableSizer(
   containerHeight?: number,
   isFullScreen?: boolean
 ): AutoSizerReturn {
+  const rowHeight = element.rowHeight || DEFAULT_ROW_HEIGHT
   let maxHeight = calculateMaxHeight(
     numRows +
       1 + // Column header row
-      (element.editingMode === ArrowProto.EditingMode.DYNAMIC ? 1 : 0) // Trailing row
+      (element.editingMode === ArrowProto.EditingMode.DYNAMIC ? 1 : 0), // Trailing row
+    rowHeight
   )
 
   let initialHeight = Math.min(maxHeight, DEFAULT_TABLE_HEIGHT)
 
   if (element.height) {
     // User has explicitly configured a height
-    initialHeight = Math.max(element.height, MIN_TABLE_HEIGHT)
+    initialHeight = Math.max(
+      element.height,
+      calculateMinTableHeight(rowHeight)
+    )
     maxHeight = Math.max(element.height, maxHeight)
   }
 
@@ -175,7 +192,7 @@ function useTableSizer(
   }, [isFullScreen])
 
   return {
-    minHeight: MIN_TABLE_HEIGHT,
+    minHeight: calculateMinTableHeight(rowHeight),
     maxHeight,
     minWidth: MIN_TABLE_WIDTH,
     maxWidth,
